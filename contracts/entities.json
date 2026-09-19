@@ -1,0 +1,17 @@
+{
+  "schema_version": "1",
+  "domain": "跨境医疗协作任务授权交换",
+  "required_fields": [
+    "institution_ref",
+    "project_ref",
+    "task_revision",
+    "consent_digest",
+    "receipt_digest"
+  ],
+  "time_format": "ISO 8601 with offset",
+  "sample": {
+    "institution_ref": "HOSPITAL-A",
+    "project_ref": "STUDY-DEMO",
+    "task_revision": 1
+  }
+}
