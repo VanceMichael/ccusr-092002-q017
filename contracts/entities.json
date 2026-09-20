@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "domain": "跨境医疗协作任务授权交换",
   "required_fields": [
     "institution_ref",
@@ -13,5 +13,53 @@
     "institution_ref": "HOSPITAL-A",
     "project_ref": "STUDY-DEMO",
     "task_revision": 1
+  },
+  "terminology_agreement": {
+    "description": "跨机构术语与用途协议：中心只保存不可逆摘要与授权元数据，不接收原始病历，不执行模型训练",
+    "actor_headers": ["X-Actor-Institution", "X-Actor-Role"],
+    "roles": ["data-steward", "clinical-lead", "lead-center", "regulator"],
+    "term_submission": {
+      "required_fields": [
+        "institution_ref",
+        "local_field_ref",
+        "definition_digest",
+        "language",
+        "unit",
+        "purposes"
+      ],
+      "definition_digest_format": "sha256:<64 位小写十六进制>",
+      "notes": "unit 允许为空字符串（分类指标）；purposes 为授权用途列表"
+    },
+    "mapping_version": {
+      "required_fields": [
+        "indicator_key",
+        "left_submission_ref",
+        "right_submission_ref",
+        "equivalence_note"
+      ],
+      "status_transitions": {
+        "pending": ["effective", "overturned"],
+        "effective": ["overturned"],
+        "overturned": []
+      },
+      "effective_rule": "两侧机构的临床负责人均签署同一版本后，该版本生效"
+    },
+    "confirmation": {
+      "required_fields": ["mapping_ref", "version", "institution_ref", "signatory_ref", "signed_at"],
+      "uniqueness": "每个机构对每个版本只能签署一次"
+    },
+    "withdrawal": {
+      "required_fields": ["mapping_ref", "version", "institution_ref", "scope", "reason"],
+      "scope_fields": ["tasks", "purposes", "from"],
+      "notes": "撤回只追加记录，不删除既有签署与历史版本；scope.tasks 为空表示覆盖全部任务"
+    },
+    "catalog_grant": {
+      "required_fields": ["task_ref", "indicator_key", "mapping_ref", "version"],
+      "rule": "仅 lead-center 可发放，且版本必须处于 effective"
+    },
+    "ambiguity_note": {
+      "required_fields": ["mapping_ref", "version", "author_institution_ref", "body"]
+    },
+    "immutability": "推翻或撤回不删除任何历史记录；使用过旧版本的结果可沿 (indicator_key, version) 永久回查"
   }
 }

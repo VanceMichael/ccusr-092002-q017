@@ -1,5 +1,37 @@
 {
-  "institution_ref": "HOSPITAL-A",
-  "project_ref": "STUDY-DEMO",
-  "task_revision": 1
+  "note": "不含真实身份的交换示例：两家机构就跌倒率指标建立术语映射并经双方临床负责人确认后发放到协作任务",
+  "term_submissions_example": [
+    {
+      "institution_ref": "HOSPITAL-A",
+      "local_field_ref": "fall-rate",
+      "definition_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "language": "zh-CN",
+      "unit": "%",
+      "purposes": ["quality-comparison"]
+    },
+    {
+      "institution_ref": "HOSPITAL-B",
+      "local_field_ref": "fall_incidence",
+      "definition_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "language": "en",
+      "unit": "ratio",
+      "purposes": ["quality-comparison"]
+    }
+  ],
+  "mapping_example": {
+    "indicator_key": "NUR-FALL-RATE",
+    "left_submission_ref": "TS-<由服务返回>",
+    "right_submission_ref": "TS-<由服务返回>",
+    "equivalence_note": "双方均按住院患者跌倒例次/千床日统计"
+  },
+  "grant_example": {
+    "task_ref": "TASK-1",
+    "indicator_key": "NUR-FALL-RATE",
+    "version": 1
+  },
+  "legacy_exchange_sample": {
+    "institution_ref": "HOSPITAL-A",
+    "project_ref": "STUDY-DEMO",
+    "task_revision": 1
+  }
 }
