@@ -1,0 +1,57 @@
+{
+  "description": "跨机构术语与用途协议完整流程示例，所有标识均为虚构，不包含真实个人资料",
+  "step_1_submit_term": {
+    "request": "POST /terms",
+    "headers": {"X-Institution-Ref": "HOSPITAL-A", "X-Actor-Ref": "staff-a", "X-Actor-Role": "submitter"},
+    "body": {
+      "local_code": "FALL-RATE",
+      "definition_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "language": "zh-CN",
+      "unit": "per_1000_patient_days",
+      "authorized_purposes": ["primary-care-comparison"]
+    }
+  },
+  "step_2_propose_mapping": {
+    "request": "POST /mappings",
+    "body": {
+      "term_a": "TERM-<机构A术语>",
+      "term_b": "TERM-<机构B术语>",
+      "relation_type": "equivalent",
+      "ambiguity_note": "A 方按千住院日计，B 方按千门诊人次计，分母口径不同"
+    }
+  },
+  "step_3_dual_confirm": {
+    "request": "POST /mappings/{mapping_id}/versions/1/confirm",
+    "note": "两侧机构的 clinical_lead 各确认一次后版本生效"
+  },
+  "step_4_issue_catalog": {
+    "request": "POST /catalogs",
+    "headers": {"X-Actor-Role": "clinical_lead"},
+    "body": {
+      "task_ref": "TASK-PC-2026",
+      "entries": [{"indicator_key": "IND-FALL-RATE", "mapping_id": "MAP-<映射标识>"}]
+    }
+  },
+  "step_5_partner_query": {
+    "request": "GET /tasks/TASK-PC-2026/catalog",
+    "note": "仅参与机构与监管人员可查；返回获授权的映射、歧义说明及版本状态"
+  },
+  "step_6_supersede": {
+    "request": "POST /mappings/{mapping_id}/versions",
+    "body": {
+      "relation_type": "narrower",
+      "ambiguity_note": "修订：B 方口径仅含住院患者",
+      "change_note": "越文译法被临床否决，改按住院日口径"
+    },
+    "note": "新版本双签生效后旧版本转为 superseded；使用过旧版本的历史结果保留"
+  },
+  "step_7_withdraw": {
+    "request": "POST /terms/{term_id}/withdraw",
+    "body": {"withdrawal_scope": "自 2026-10-01 起不再授权用于新协作任务"}
+  },
+  "step_8_regulator_lineage": {
+    "request": "GET /catalogs/{catalog_id}/entries/{indicator_key}/lineage",
+    "headers": {"X-Actor-Role": "regulator"},
+    "note": "返回绑定版本、参与机构签署、撤回范围及取代关系"
+  }
+}

@@ -1,6 +1,7 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "domain": "跨境医疗协作任务授权交换",
+  "boundary": "中心只保存不可逆摘要与协议元数据；不接收原始病历，不执行模型训练",
   "required_fields": [
     "institution_ref",
     "project_ref",
@@ -8,6 +9,33 @@
     "consent_digest",
     "receipt_digest"
   ],
+  "terminology_agreement": {
+    "identity_headers": ["X-Institution-Ref", "X-Actor-Ref", "X-Actor-Role"],
+    "roles": ["submitter", "clinical_lead", "partner", "regulator"],
+    "term_submission": {
+      "required_fields": ["local_code", "definition_digest", "language", "authorized_purposes"],
+      "optional_fields": ["unit"],
+      "digest_format": "SHA-256，64 位小写十六进制",
+      "status": ["active", "withdrawn"],
+      "withdrawal": "撤回须填写 withdrawal_scope；历史映射与目录不受影响"
+    },
+    "mapping_version": {
+      "relation_types": ["equivalent", "narrower", "broader", "incomparable"],
+      "status": ["pending", "effective", "superseded", "rejected"],
+      "activation": "两侧机构临床负责人均确认后生效；旧生效版本自动转为 superseded，永不删除",
+      "revision": "存在待确认版本时不得再提议新版本；否决后可重新提议"
+    },
+    "catalog": {
+      "required_fields": ["task_ref", "entries"],
+      "entry_fields": ["indicator_key", "mapping_id"],
+      "issuance": "仅 clinical_lead 可发放；映射须有生效版本；发放后不可变",
+      "indicator_ref": "catalog_id/indicator_key，全局唯一，供监管追溯"
+    },
+    "queries": {
+      "partner": "仅可查询本机构参与的协作任务下获授权的映射与歧义说明",
+      "regulator": "可沿 indicator_ref 追溯参与机构签署与撤回范围"
+    }
+  },
   "time_format": "ISO 8601 with offset",
   "sample": {
     "institution_ref": "HOSPITAL-A",
